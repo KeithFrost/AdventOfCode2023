@@ -163,19 +163,11 @@ defmodule Hail do
       IO.inspect(rhs)
       solve_xyz_uvw(rays)
     else
-      {nz0, md_avg} = Enum.map(-1000..1000, fn dz0 ->
-        zz = z0 + dz0
-        solx = {[x0, y0, zz], [u0, v0, w0]}
-        mds = solution_distances(solx, rays)
-        md_avg = Enum.sum(mds) / Enum.count(mds)
-        {zz, md_avg}
-      end) |>
-        Enum.min_by(fn {_, md_avg} -> md_avg end)
       IO.puts("Successful return of solve_xyz_uvw md_avg = #{md_avg}")
-      {[x0, y0, nz0], [u0, v0, w0]}
+      {[x0, y0, z0], [u0, v0, w0]}
     end
   end
-  def min_distance2(ray1, ray2) do
+  def min_distance(ray1, ray2) do
     {[x1, y1, z1], [u1, v1, w1]} = ray1
     {[x2, y2, z2], [u2, v2, w2]} = ray2
     dx = [x2 - x1, y2 - y1, z2 - z1]
@@ -187,7 +179,7 @@ defmodule Hail do
       dx2
     else
       num = dx2 * dv2 - dxdv * dxdv
-      num / dv2
+      :math.sqrt(num / dv2)
     end
   end
   def optimize_md(soln, rays) do
@@ -204,8 +196,6 @@ defmodule Hail do
     {{pp_best, v}, md_avg}
   end
   def solution_distances(ray0, rays) do
-    Enum.map(rays, fn ray ->
-      :math.sqrt(min_distance2(ray0, ray))
-    end)
+    Enum.map(rays, fn ray -> min_distance(ray0, ray) end)
   end
 end
