@@ -52,38 +52,34 @@ defmodule Pipes do
       Enum.sort()
   end
 
-  def count_inside(state, loop_set, map) do
+  def count_inside_line(state, loop_set, map) do
     pos = state.pos
     v = Map.get(map, pos)
     if v == nil do
       state.count
     else
+      xings = state.xings
+      state = cond do
+        MapSet.member?(loop_set, pos) ->
+	  case {state.pstart, v} do
+	    {nil, ?|} -> %{state | xings: xings + 1}
+	    {nil, ?F} -> %{state | pstart: ?F}
+	    {nil, ?L} -> %{state | pstart: ?L}
+	    {?L, ?-} -> state
+	    {?F, ?-} -> state
+	    {?L, ?J} -> %{state | pstart: nil}
+	    {?L, ?7} -> %{state | xings: xings + 1, pstart: nil}
+	    {?F, ?J} -> %{state | xings: xings + 1, pstart: nil}
+	    {?F, ?7} -> %{state | pstart: nil}
+	  end
+        rem(xings, 2) == 1 ->
+	  %{state | count: state.count + 1}
+        true ->
+	  state
+      end
       {x, y} = pos
       state = %{state | pos: {x + 1, y}}
-      xings = state.xings
-      if MapSet.member?(loop_set, pos) do
-	pstart = state.pstart
-	state =
-	  case {v, pstart} do
-	    {?-, ?L} -> state
-	    {?-, ?F} -> state
-	    {?|, nil} -> %{state | xings: xings + 1}
-	    {?J, ?L} -> %{state | pstart: nil}
-	    {?J, ?F} -> %{state | xings: xings + 1, pstart: nil}
-	    {?7, ?L} -> %{state | xings: xings + 1, pstart: nil}
-	    {?7, ?F} -> %{state | pstart: nil}
-	    {?F, nil} -> %{state | pstart: ?F}
-	    {?L, nil} -> %{state | pstart: ?L}
-	  end
-	count_inside(state, loop_set, map)
-      else
-	state = if xings > 0 and rem(xings, 2) == 1 do
-	  %{state | count: state.count + 1}
-	else
-	  state
-	end
-	count_inside(state, loop_set, map)
-      end
+      count_inside_line(state, loop_set, map)
     end
   end
 
@@ -124,7 +120,7 @@ case System.argv() do
 	loop_set = MapSet.new(loop)
 	Pipes.left_edges(map2) |>
 	  Enum.map(fn pos ->
-	    Pipes.count_inside(
+	    Pipes.count_inside_line(
 	      %{pos: pos, xings: 0, pstart: nil, count: 0},
 	      loop_set, map2)
 	  end) |>
