@@ -21,13 +21,13 @@ defmodule Hashy do
   def replace_or_append({label, focus}, lenses, acc \\ []) do
     case lenses do
       [] ->
-	Enum.reverse([{label, focus} | acc])
+        Enum.reverse([{label, focus} | acc])
       [{l, f} | rest] ->
-	if label == l do
-	  Enum.reverse(acc, [{label, focus} | rest])
-	else
-	  replace_or_append({label, focus}, rest, [{l, f} | acc])
-	end
+        if label == l do
+          Enum.reverse(acc, [{label, focus} | rest])
+        else
+          replace_or_append({label, focus}, rest, [{l, f} | acc])
+        end
     end
   end
   def perform_setting({label, op, focus}, state) do
@@ -35,19 +35,19 @@ defmodule Hashy do
     lenses = Map.get(state, box, [])
     new_lenses =
       case op do
-	?= ->
-	  replace_or_append({label, focus}, lenses)
-	?- ->
-	  Enum.filter(lenses, fn {l, _f} -> l != label end)
+        ?= ->
+          replace_or_append({label, focus}, lenses)
+        ?- ->
+          Enum.filter(lenses, fn {l, _f} -> l != label end)
       end
     Map.put(state, box, new_lenses)
   end
   def total_focus_power(state) do
     Enum.reduce(state, 0, fn {box, lenses}, sum ->
       lens_sum =
-	Enum.with_index(lenses, fn {_label, focus}, i ->
-	  (1 + i) * focus
-	end) |> Enum.sum()
+        Enum.with_index(lenses, fn {_label, focus}, i ->
+          (1 + i) * focus
+        end) |> Enum.sum()
       sum + (box + 1) * lens_sum
     end)
   end
@@ -62,8 +62,8 @@ case System.argv() do
   ["2", path] ->
     state = Hashy.parse_file(path) |>
       Enum.reduce(%{}, fn ss, state ->
-	setting = Hashy.parse_setting(ss)
-	Hashy.perform_setting(setting, state)
+        setting = Hashy.parse_setting(ss)
+        Hashy.perform_setting(setting, state)
       end)
     IO.inspect(Hashy.total_focus_power(state))
   [] ->

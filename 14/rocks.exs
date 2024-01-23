@@ -2,10 +2,10 @@ defmodule Rocks do
   def parse_line(s) do
     String.trim(s) |> to_charlist() |> Enum.map(fn v ->
       case v do
-	?. -> ?.
-	?O -> ?O
-	?X -> ?X
-	?# -> ?X
+        ?. -> ?.
+        ?O -> ?O
+        ?X -> ?X
+        ?# -> ?X
       end
     end)
   end
@@ -18,13 +18,13 @@ defmodule Rocks do
   def shift_to_head(list, spaces \\ 0, acc \\ []) do
     case list do
       [] ->
-	Enum.reverse(List.duplicate(?., spaces) ++ acc)
+        Enum.reverse(List.duplicate(?., spaces) ++ acc)
       [?. | rest] ->
-	shift_to_head(rest, spaces + 1, acc)
+        shift_to_head(rest, spaces + 1, acc)
       [?O | rest] ->
-	shift_to_head(rest, spaces, [?O | acc])
+        shift_to_head(rest, spaces, [?O | acc])
       [?X | rest] ->
-	shift_to_head(rest, 0, [?X | List.duplicate(?., spaces)] ++ acc)
+        shift_to_head(rest, 0, [?X | List.duplicate(?., spaces)] ++ acc)
     end
   end
   def shift_to_tail(list) do
@@ -46,11 +46,11 @@ defmodule Rocks do
     dist = length(image)
     Enum.with_index(image, fn row, i ->
       (dist - i) * Enum.reduce(row, 0, fn v, count ->
-	case v do
-	  ?. -> count
-	  ?O -> count + 1
-	  ?X -> count
-	end
+        case v do
+          ?. -> count
+          ?O -> count + 1
+          ?X -> count
+        end
       end)
     end) |> Enum.sum()
   end
@@ -59,11 +59,11 @@ defmodule Rocks do
       image
     else
       spun = image |>
-	roll_north() |> roll_west() |> roll_south() |> roll_east()
+        roll_north() |> roll_west() |> roll_south() |> roll_east()
       if spun == image do
-	image
+        image
       else
-	spin_cycle(spun, cycles - 1)
+        spin_cycle(spun, cycles - 1)
       end
     end
   end

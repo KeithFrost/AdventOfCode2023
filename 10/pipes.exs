@@ -23,25 +23,25 @@ defmodule Pipes do
       extend_trail
     else
       next_candidate =
-	case {x - x0, y - y0, v} do
-	  {0, 1, ?|}  -> {x, y+1}
-	  {0, 1, ?L}  -> {x+1, y}
-	  {0, 1, ?J}  -> {x-1, y}
-	  {0, -1, ?|} -> {x, y-1}
-	  {0, -1, ?F} -> {x+1, y}
-	  {0, -1, ?7} -> {x-1, y}
-	  {1, 0, ?-}  -> {x+1, y}
-	  {1, 0, ?J}  -> {x, y-1}
-	  {1, 0, ?7}  -> {x, y+1}
-	  {-1, 0, ?-} -> {x-1, y}
-	  {-1, 0, ?F} -> {x, y+1}
-	  {-1, 0, ?L} -> {x, y-1}
-	  _ -> nil
-	end
+        case {x - x0, y - y0, v} do
+          {0, 1, ?|}  -> {x, y+1}
+          {0, 1, ?L}  -> {x+1, y}
+          {0, 1, ?J}  -> {x-1, y}
+          {0, -1, ?|} -> {x, y-1}
+          {0, -1, ?F} -> {x+1, y}
+          {0, -1, ?7} -> {x-1, y}
+          {1, 0, ?-}  -> {x+1, y}
+          {1, 0, ?J}  -> {x, y-1}
+          {1, 0, ?7}  -> {x, y+1}
+          {-1, 0, ?-} -> {x-1, y}
+          {-1, 0, ?F} -> {x, y+1}
+          {-1, 0, ?L} -> {x, y-1}
+          _ -> nil
+        end
       if next_candidate == nil do
-	nil
+        nil
       else
-	follow_pipe(next_candidate, extend_trail, map)
+        follow_pipe(next_candidate, extend_trail, map)
       end
     end
   end
@@ -61,21 +61,21 @@ defmodule Pipes do
       xings = state.xings
       state = cond do
         MapSet.member?(loop_set, pos) ->
-	  case {state.pstart, v} do
-	    {nil, ?|} -> %{state | xings: xings + 1}
-	    {nil, ?F} -> %{state | pstart: ?F}
-	    {nil, ?L} -> %{state | pstart: ?L}
-	    {?L, ?-} -> state
-	    {?F, ?-} -> state
-	    {?L, ?J} -> %{state | pstart: nil}
-	    {?L, ?7} -> %{state | xings: xings + 1, pstart: nil}
-	    {?F, ?J} -> %{state | xings: xings + 1, pstart: nil}
-	    {?F, ?7} -> %{state | pstart: nil}
-	  end
+          case {state.pstart, v} do
+            {nil, ?|} -> %{state | xings: xings + 1}
+            {nil, ?F} -> %{state | pstart: ?F}
+            {nil, ?L} -> %{state | pstart: ?L}
+            {?L, ?-} -> state
+            {?F, ?-} -> state
+            {?L, ?J} -> %{state | pstart: nil}
+            {?L, ?7} -> %{state | xings: xings + 1, pstart: nil}
+            {?F, ?J} -> %{state | xings: xings + 1, pstart: nil}
+            {?F, ?7} -> %{state | pstart: nil}
+          end
         rem(xings, 2) == 1 ->
-	  %{state | count: state.count + 1}
+          %{state | count: state.count + 1}
         true ->
-	  state
+          state
       end
       {x, y} = pos
       state = %{state | pos: {x + 1, y}}
@@ -91,14 +91,14 @@ defmodule Pipes do
     else
       deltas = [{xn - x0, yn - y0}, {x1 - x0, y1 - y0}] |> Enum.sort()
       v =
-	case deltas do
-	  [{-1, 0}, {0, -1}] -> ?J
-	  [{-1, 0}, {0, 1}]  -> ?7
-	  [{-1, 0}, {1, 0}]  -> ?-
-	  [{0, -1}, {0, 1}]  -> ?|
-	  [{0, -1}, {1, 0}]  -> ?L
-	  [{0, 1}, {1, 0}]   -> ?F
-	end
+        case deltas do
+          [{-1, 0}, {0, -1}] -> ?J
+          [{-1, 0}, {0, 1}]  -> ?7
+          [{-1, 0}, {1, 0}]  -> ?-
+          [{0, -1}, {0, 1}]  -> ?|
+          [{0, -1}, {1, 0}]  -> ?L
+          [{0, 1}, {1, 0}]   -> ?F
+        end
       Map.put(map, {x0, y0}, v)
     end
   end
@@ -111,21 +111,21 @@ case System.argv() do
     {x, y} = start
     loop = [{x+1, y}, {x-1, y}, {x, y+1}, {x, y-1}] |>
       Enum.find_value(fn candidate ->
-	Pipes.follow_pipe(candidate, [start], map) end)
+        Pipes.follow_pipe(candidate, [start], map) end)
     case stage do
       "1" ->
-	IO.inspect(div(length(loop) - 1, 2))
+        IO.inspect(div(length(loop) - 1, 2))
       "2" ->
-	map2 = Pipes.refill_start(loop, map)
-	loop_set = MapSet.new(loop)
-	Pipes.left_edges(map2) |>
-	  Enum.map(fn pos ->
-	    Pipes.count_inside_line(
-	      %{pos: pos, xings: 0, pstart: nil, count: 0},
-	      loop_set, map2)
-	  end) |>
-	  Enum.sum() |>
-	  IO.inspect()
+        map2 = Pipes.refill_start(loop, map)
+        loop_set = MapSet.new(loop)
+        Pipes.left_edges(map2) |>
+          Enum.map(fn pos ->
+            Pipes.count_inside_line(
+              %{pos: pos, xings: 0, pstart: nil, count: 0},
+              loop_set, map2)
+          end) |>
+          Enum.sum() |>
+          IO.inspect()
     end
   _ ->
     :ok

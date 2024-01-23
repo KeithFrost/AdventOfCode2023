@@ -4,9 +4,9 @@ defmodule Cal do
     case all_digits do
       [] -> 0
       _ ->
-	first = String.to_integer(List.first(all_digits))
-	last = String.to_integer(List.last(all_digits))
-	10 * first + last
+        first = String.to_integer(List.first(all_digits))
+        last = String.to_integer(List.last(all_digits))
+        10 * first + last
     end
   end
 end

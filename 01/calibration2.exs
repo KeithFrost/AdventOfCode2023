@@ -13,9 +13,9 @@ defmodule Cal do
     case first_digit_match do
       nil -> 0
       _ ->
-	first = @digits[List.last(first_digit_match)]
-	last = @digits[List.last(last_digit_match)]
-	10 * first + last
+        first = @digits[List.last(first_digit_match)]
+        last = @digits[List.last(last_digit_match)]
+        10 * first + last
     end
   end
 end

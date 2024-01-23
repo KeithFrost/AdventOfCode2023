@@ -14,20 +14,20 @@ defmodule Network do
   def parse_line(s, state) do
     case state.parsing do
       :dirs ->
-	dirs = parse_dirs(s)
-	case dirs do
-	  nil -> state
-	  _ -> %{state | dirs: dirs, parsing: :nodes}
-	end
+        dirs = parse_dirs(s)
+        case dirs do
+          nil -> state
+          _ -> %{state | dirs: dirs, parsing: :nodes}
+        end
       :nodes ->
-	node = parse_node(s)
-	case node do
-	  nil ->
-	    state
-	  {label, value} ->
-	    Map.update!(state, :nodes, fn(nodes) ->
-	      Map.put(nodes, label, value) end)
-	end
+        node = parse_node(s)
+        case node do
+          nil ->
+            state
+          {label, value} ->
+            Map.update!(state, :nodes, fn(nodes) ->
+              Map.put(nodes, label, value) end)
+        end
     end
   end
   def parse_file(path) do
@@ -54,19 +54,19 @@ defmodule Network do
     Stream.with_index(dirs) |>
       Stream.cycle() |>
       Stream.transform({0, start, %{}, false}, fn({dir, index}, state) ->
-	{offset, label, zm, done} = state
-	if done do
-	  {:halt, nil}
-	else
-	  node = move_node(dir, label, nodes)
-	  if endz(label) do
-	    done = Map.has_key?(zm, {index, label})
-	    {[{offset, index, label}],
-	     {offset + 1, node, Map.put(zm, {index, label}, offset), done}}
-	  else
-	    {[], {offset + 1, node, zm, false}}
-	  end
-	end
+        {offset, label, zm, done} = state
+        if done do
+          {:halt, nil}
+        else
+          node = move_node(dir, label, nodes)
+          if endz(label) do
+            done = Map.has_key?(zm, {index, label})
+            {[{offset, index, label}],
+             {offset + 1, node, Map.put(zm, {index, label}, offset), done}}
+          else
+            {[], {offset + 1, node, zm, false}}
+          end
+        end
       end) |>
       Enum.to_list()
   end
@@ -74,7 +74,7 @@ defmodule Network do
     {z_offset1, z_index, z_label} = List.last(zlist)
     {z_offset0, _, _} =
       Enum.find(zlist, fn {_, index, label} ->
-	index == z_index and label == z_label end)
+        index == z_index and label == z_label end)
     {preloop, loop} =
       Enum.split_while(zlist, fn {o, _, _} -> o <= z_offset0 end)
     period = z_offset1 - z_offset0
@@ -86,8 +86,8 @@ defmodule Network do
       Stream.cycle([loop]) |>
       Stream.with_index() |>
       Stream.flat_map(fn {looplist, rep} ->
-	Enum.map(looplist, fn {offset, index, label} ->
-	  {offset + rep * period, index, label} end)
+        Enum.map(looplist, fn {offset, index, label} ->
+          {offset + rep * period, index, label} end)
       end)
     Stream.concat(preloop, loop_stream)
   end
@@ -111,19 +111,19 @@ defmodule Network do
       Map.new()
     zstream(zmap2) |>
       Stream.transform({%{}, false}, fn({o, i, l}, {zm, done}) ->
-	if done or o > max_offset do
-	  {:halt, nil}
-	else
-	  if Map.has_key?(offset_map1, o) do
-	    {_, l1} = offset_map1[o]
-	    label = l1 <> "," <> l
-	    done = Map.has_key?(zm, {i, label})
-	    {[{o, i, label}],
-	     {Map.put(zm, {i, label}, o), done}}
-	  else
-	    {[], {zm, false}}
-	  end
-	end
+        if done or o > max_offset do
+          {:halt, nil}
+        else
+          if Map.has_key?(offset_map1, o) do
+            {_, l1} = offset_map1[o]
+            label = l1 <> "," <> l
+            done = Map.has_key?(zm, {i, label})
+            {[{o, i, label}],
+             {Map.put(zm, {i, label}, o), done}}
+          else
+            {[], {zm, false}}
+          end
+        end
       end) |>
       Enum.to_list()
   end
@@ -154,17 +154,17 @@ case System.argv() do
       Network.zlist(start, dirs, nodes) end)
     Stream.unfold(zlists, fn zls ->
       case zls do
-	[] ->
-	  nil
-	[zl] ->
-	  {[zl], []}
-	_ ->
-	  {zls,
-	   Enum.chunk_every(zls, 2) |>
-	     Enum.map(fn
-	       [zl1, zl2] -> Network.zlist_merged(zl1, zl2)
-	       [zl1] -> zl1
-	     end)}
+        [] ->
+          nil
+        [zl] ->
+          {[zl], []}
+        _ ->
+          {zls,
+           Enum.chunk_every(zls, 2) |>
+             Enum.map(fn
+               [zl1, zl2] -> Network.zlist_merged(zl1, zl2)
+               [zl1] -> zl1
+             end)}
       end
     end) |>
       Enum.to_list() |>

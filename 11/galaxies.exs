@@ -24,11 +24,11 @@ defmodule Galaxies do
   def expand_list(l, iset) do
     Enum.with_index(l) |>
       Enum.flat_map(fn {v, i} ->
-	if MapSet.member?(iset, i) do
-	  [v, v]
-	else
-	  [v]
-	end
+        if MapSet.member?(iset, i) do
+          [v, v]
+        else
+          [v]
+        end
       end)
   end
   def expand_space(image) do
@@ -40,9 +40,9 @@ defmodule Galaxies do
   def positions(image) do
     Enum.with_index(image) |>
       Enum.flat_map(fn {row, y} ->
-	Enum.with_index(row) |>
-	  Enum.filter(fn {v, _x} -> v > 0 end) |>
-	  Enum.map(fn {_v, x} -> {x, y} end)
+        Enum.with_index(row) |>
+          Enum.filter(fn {v, _x} -> v > 0 end) |>
+          Enum.map(fn {_v, x} -> {x, y} end)
       end)
   end
   def expand_coordinate(coord, factor, empties) do
@@ -62,11 +62,11 @@ defmodule Galaxies do
   def distances(positions, acc \\ []) do
     case positions do
       [] ->
-	Enum.reverse(acc)
+        Enum.reverse(acc)
       [{x, y} | rest] ->
-	distances(rest,
-	  [Enum.map(rest, fn {x2, y2} ->
-	      abs(x2 - x) + abs(y2 - y) end) | acc])
+        distances(rest,
+          [Enum.map(rest, fn {x2, y2} ->
+              abs(x2 - x) + abs(y2 - y) end) | acc])
     end
   end
 end

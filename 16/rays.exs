@@ -15,56 +15,56 @@ defmodule Rays do
     else
       raymap = Map.put(raymap, {x, y}, [dir | r0])
       cond do
-	m == ?| and (dir == ?< or dir == ?>) ->
-	  {raymap, [{?v, x, y + 1}, {?^, x, y - 1}]}
-	m == ?- and (dir == ?^ or dir == ?v) ->
-	  {raymap, [{?<, x - 1, y}, {?>, x + 1, y}]}
-	true ->
-	  ndir =
-	    case {dir, m} do
-	      {?>, ?.} -> ?>
-	      {?>, ?-} -> ?>
-	      {?>, ?\\} -> ?v
-	      {?>, ?/} -> ?^
-	      {?<, ?.} -> ?<
-	      {?<, ?-} -> ?<
-	      {?<, ?\\} -> ?^
-	      {?<, ?/} -> ?v
-	      {?^, ?.} -> ?^
-	      {?^, ?|} -> ?^
-	      {?^, ?\\} -> ?<
-	      {?^, ?/} -> ?>
-	      {?v, ?.} -> ?v
-	      {?v, ?|} -> ?v
-	      {?v, ?\\} -> ?>
-	      {?v, ?/} -> ?<
-	    end
-	  {xn, yn} =
-	    case ndir do
-	      ?> -> {x + 1, y}
-	      ?< -> {x - 1, y}
-	      ?^ -> {x, y - 1}
-	      ?v -> {x, y + 1}
-	    end
-	  trace_ray({ndir, xn, yn}, map, raymap)
+        m == ?| and (dir == ?< or dir == ?>) ->
+          {raymap, [{?v, x, y + 1}, {?^, x, y - 1}]}
+        m == ?- and (dir == ?^ or dir == ?v) ->
+          {raymap, [{?<, x - 1, y}, {?>, x + 1, y}]}
+        true ->
+          ndir =
+            case {dir, m} do
+              {?>, ?.} -> ?>
+              {?>, ?-} -> ?>
+              {?>, ?\\} -> ?v
+              {?>, ?/} -> ?^
+              {?<, ?.} -> ?<
+              {?<, ?-} -> ?<
+              {?<, ?\\} -> ?^
+              {?<, ?/} -> ?v
+              {?^, ?.} -> ?^
+              {?^, ?|} -> ?^
+              {?^, ?\\} -> ?<
+              {?^, ?/} -> ?>
+              {?v, ?.} -> ?v
+              {?v, ?|} -> ?v
+              {?v, ?\\} -> ?>
+              {?v, ?/} -> ?<
+            end
+          {xn, yn} =
+            case ndir do
+              ?> -> {x + 1, y}
+              ?< -> {x - 1, y}
+              ?^ -> {x, y - 1}
+              ?v -> {x, y + 1}
+            end
+          trace_ray({ndir, xn, yn}, map, raymap)
       end
     end
   end
   def gen_raymap(starts, map, raymap \\ %{}) do
     case starts do
       [] ->
-	raymap
+        raymap
       [start | rstarts] ->
-	{raymap, nstarts} = trace_ray(start, map, raymap)
-	gen_raymap(nstarts ++ rstarts, map, raymap)
+        {raymap, nstarts} = trace_ray(start, map, raymap)
+        gen_raymap(nstarts ++ rstarts, map, raymap)
     end
   end
   def count_energized(raymap) do
     Enum.reduce(raymap, 0, fn {{_x, _y}, dirs}, sum ->
       if length(dirs) > 0 do
-	sum + 1
+        sum + 1
       else
-	sum
+        sum
       end
     end)
   end

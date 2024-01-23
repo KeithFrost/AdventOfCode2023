@@ -22,11 +22,11 @@ defmodule CamelCards do
     end
     counts = Map.values(hand_map) |> Enum.sort() |> Enum.reverse()
     counts = case counts do
-	       [] ->
-		 if jokers > 0 do [jokers] else [] end
-	       [most | rest] ->
-		 [most + jokers | rest]
-	     end
+               [] ->
+                 if jokers > 0 do [jokers] else [] end
+               [most | rest] ->
+                 [most + jokers | rest]
+             end
     case counts do
       [5 | _] -> :five
       [4 | _] -> :four
@@ -42,13 +42,13 @@ defmodule CamelCards do
     Enum.map(hand_list, fn {cards, bid} ->
       {@kind_rank[kind(cards, joker_rule)],
        Enum.map(cards, fn c ->
-	 if joker_rule do @jcard_rank[c] else @card_rank[c] end
+         if joker_rule do @jcard_rank[c] else @card_rank[c] end
        end),
        bid}
     end) |>
       Enum.sort() |>
       Enum.with_index(fn({_k, _c, bid}, index) ->
-	(index + 1) * bid end) |>
+        (index + 1) * bid end) |>
       Enum.sum()
   end
 end
@@ -56,9 +56,9 @@ end
 case System.argv() do
   [stage, path] ->
     joker_rule = case stage do
-		   "1" -> false
-		   "2" -> true
-		 end
+                   "1" -> false
+                   "2" -> true
+                 end
     hand_list = File.stream!(path) |> Enum.map(&CamelCards.parse_line/1)
     IO.inspect(CamelCards.winnings(hand_list, joker_rule))
   _ ->

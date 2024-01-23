@@ -2,30 +2,30 @@ defmodule Schematic do
   def parse_charlist(charlist, x, y, parts, symbols) do
     case charlist do
       [] ->
-	{parts, symbols}
+        {parts, symbols}
       [?. | tail] ->
-	parse_charlist(tail, x+1, y, parts, symbols)
+        parse_charlist(tail, x+1, y, parts, symbols)
       [head | _tail] when head >= ?0 and head <= ?9 ->
-	part = %{x0: x, y: y}
-	{part, new_tail} = parse_part(charlist, part)
-	parse_charlist(new_tail, part.x1, y, [part | parts], symbols)
+        part = %{x0: x, y: y}
+        {part, new_tail} = parse_part(charlist, part)
+        parse_charlist(new_tail, part.x1, y, [part | parts], symbols)
       [symbol | tail] ->
-	new_symbols = Map.put(symbols, {x, y}, symbol)
-	parse_charlist(tail, x+1, y, parts, new_symbols)
+        new_symbols = Map.put(symbols, {x, y}, symbol)
+        parse_charlist(tail, x+1, y, parts, new_symbols)
     end
   end
 
   def parse_part(charlist, part) do
     case charlist do
       [head | tail] when head >= ?0 and head <= ?9 ->
-	digit = head - ?0
-	x0 = Map.get(part, :x0, 0)
-	updated = part |>
-	  Map.update(:x1, x0+1, fn x -> x+1 end) |>
-	  Map.update(:id, digit, fn id -> 10 * id + digit end)
-	parse_part(tail, updated)
+        digit = head - ?0
+        x0 = Map.get(part, :x0, 0)
+        updated = part |>
+          Map.update(:x1, x0+1, fn x -> x+1 end) |>
+          Map.update(:id, digit, fn id -> 10 * id + digit end)
+        parse_part(tail, updated)
       _ ->
-	{part, charlist}
+        {part, charlist}
     end
   end
 
@@ -34,10 +34,10 @@ defmodule Schematic do
       Stream.map(&String.trim/1) |>
       Stream.map(&Kernel.to_charlist/1) |>
       Enum.with_index(fn(charlist, y) ->
-	Schematic.parse_charlist(charlist, 0, y, [], %{}) end) |>
+        Schematic.parse_charlist(charlist, 0, y, [], %{}) end) |>
       Enum.reduce({[], %{}},
-	fn({parts, symbols}, {pparts, psymbols}) ->
-	  {parts ++ pparts, Map.merge(psymbols, symbols)} end)
+        fn({parts, symbols}, {pparts, psymbols}) ->
+          {parts ++ pparts, Map.merge(psymbols, symbols)} end)
   end
 
   def symbol_adjacent?(part, symbols) do
@@ -60,7 +60,7 @@ defmodule Schematic do
     Enum.reduce(parts, %{}, fn(part, adj) ->
       adj_symbols = adjacent_symbols(part, symbols)
       Enum.reduce(adj_symbols, adj, fn(loc, adj) ->
-	Map.update(adj, loc, [part], fn(prev) -> [part | prev] end) end)
+        Map.update(adj, loc, [part], fn(prev) -> [part | prev] end) end)
     end)
   end
 
@@ -68,8 +68,8 @@ defmodule Schematic do
     Enum.filter(symbols, fn {loc, sym} ->
       sym == ?* and length(Map.get(adj_parts, loc, [])) == 2 end) |>
       Enum.map(fn {loc, ?*} ->
-	[part1, part2] = Map.fetch!(adj_parts, loc)
-	part1.id * part2.id end)
+        [part1, part2] = Map.fetch!(adj_parts, loc)
+        part1.id * part2.id end)
   end
 end
 

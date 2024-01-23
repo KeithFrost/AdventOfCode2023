@@ -36,10 +36,10 @@ defmodule Scratch do
     case ids do
       [] -> copies
       [id | rest] ->
-	incr_copies(
-	  rest,
-	  Map.update(copies, id, count, fn prev -> prev + count end),
-	  count)
+        incr_copies(
+          rest,
+          Map.update(copies, id, count, fn prev -> prev + count end),
+          count)
     end
   end
 
@@ -47,17 +47,17 @@ defmodule Scratch do
   def card_copies(cards, copies \\ %{}) do
     case cards do
       [card | rest] ->
-	{id, winners, haves} = card
-	copies = Map.update(copies, id, 1, fn prev -> prev + 1 end)
-	matches = card_matches(winners, haves)
-	if matches > 0 do
-	  count = Map.get(copies, id, 0)
-	  new_copies = incr_copies(
-	    Enum.to_list((id + 1)..(id + matches)), copies, count)
-	  card_copies(rest, new_copies)
-	else
-	  card_copies(rest, copies)
-	end
+        {id, winners, haves} = card
+        copies = Map.update(copies, id, 1, fn prev -> prev + 1 end)
+        matches = card_matches(winners, haves)
+        if matches > 0 do
+          count = Map.get(copies, id, 0)
+          new_copies = incr_copies(
+            Enum.to_list((id + 1)..(id + matches)), copies, count)
+          card_copies(rest, new_copies)
+        else
+          card_copies(rest, copies)
+        end
       [] -> copies
     end
   end

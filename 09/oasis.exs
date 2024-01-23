@@ -15,9 +15,9 @@ defmodule Oasis do
   def prediction(seq, backwards \\ false) do
     diffns = Stream.unfold(seq, fn x ->
       if all_zero?(x) do
-	nil
+        nil
       else
-	{x, differences(x)}
+        {x, differences(x)}
       end
     end) |>
       Enum.reverse()
@@ -32,9 +32,9 @@ end
 case System.argv() do
   [stage, path] ->
     backwards = case stage do
-		  "1" -> false
-		  "2" -> true
-		end
+                  "1" -> false
+                  "2" -> true
+                end
     seqs = Oasis.parse_file(path)
     Enum.map(seqs, fn seq -> Oasis.prediction(seq, backwards) end) |>
       Enum.sum() |>
